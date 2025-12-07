@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Realtime Chat — Demo</title>
+  <title>Realtime Chat</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{
@@ -41,7 +41,6 @@
       align-items:stretch;
     }
 
-    /* Left: chat area */
     .panel{
       background:var(--card);
       border-radius:12px;
@@ -81,7 +80,7 @@
     .dot.online{background:var(--accent-2)}
     .dot.offline{background:#e2e8f0}
 
-    /* messages list */
+
     .messages{
       flex:1;
       overflow:auto;
@@ -103,7 +102,7 @@
     }
     .meta{font-size:12px;color:var(--muted);margin-top:6px}
 
-    /* alignment */
+
     .msg.me{
       margin-left:auto;
       background:var(--me-bg);
@@ -117,7 +116,7 @@
       border-bottom-left-radius:4px;
     }
 
-    /* small name bubble for other */
+
     .name{
       display:inline-block;
       font-size:12px;
@@ -125,7 +124,6 @@
       margin-bottom:6px;
     }
 
-    /* right column: controls */
     .panel.small{
       padding:18px;
       display:flex;
@@ -155,11 +153,11 @@
     }
     .sendbar button:disabled{opacity:0.6;cursor:not-allowed}
 
-    /* small helpers */
+
     .muted{color:var(--muted);font-size:13px}
     .tiny{font-size:12px;color:var(--muted)}
 
-    /* responsive */
+
     @media (max-width:900px){
       .container{grid-template-columns:1fr;max-width:640px}
       .panel.small{order:2}
@@ -210,22 +208,19 @@
     </div>
   </div>
 
-  <!-- pusher-js -->
   <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
 
   <script>
-    // CONFIG - change if needed
     const PUSHER_KEY = 'local';
     const WS_HOST = window.location.hostname; // or '127.0.0.1'
     const WS_PORT = 6001;
     const USE_TLS = false;
 
-    // small helpers
     function log(msg){ const el = document.getElementById('log'); el.innerHTML = `${new Date().toLocaleTimeString()}: ${msg}<br>` + el.innerHTML; }
     function escapeHtml(text){ const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }; return String(text || '').replace(/[&<>"']/g, m => map[m]); }
     function timeShort(iso){ try{ return new Date(iso).toLocaleTimeString(); }catch(e){ return ''; } }
 
-    // init pusher client connecting to local websockets (soketi or laravel-websockets)
+
     const pusher = new Pusher(PUSHER_KEY, {
       wsHost: WS_HOST,
       wsPort: WS_PORT,
@@ -235,7 +230,6 @@
       disableStats: true,
     });
 
-    // connection status UI
     const connDot = document.getElementById('conn-dot');
     const connText = document.getElementById('conn-text');
     function setOnline(){ connDot.className = 'dot online'; connText.textContent = 'connected' }
@@ -245,10 +239,10 @@
     pusher.connection.bind('disconnected', function(){ setOffline(); log('WebSocket disconnected'); });
     pusher.connection.bind('error', function(err){ setOffline(); log('WebSocket error: ' + (err.error && err.error.message ? err.error.message : JSON.stringify(err))); });
 
-    // subscribe channel
+
     const channel = pusher.subscribe('messages.channel');
 
-    // helper to render message
+
     function renderMessage(data, selfId){
       const container = document.getElementById('messages');
       const wrapper = document.createElement('div');
@@ -275,17 +269,14 @@
 
       wrapper.appendChild(msgEl);
       container.appendChild(wrapper);
-      // keep scroll to bottom
+ 
       container.scrollTop = container.scrollHeight;
     }
-
-    // event bind (note: server broadcastAs => 'message.received' or 'message.received' event name)
-    channel.bind('message.received', function(e){
+   channel.bind('message.received', function(e){
       const myId = document.getElementById('sender_id').value || 0;
       renderMessage(e, myId);
     });
 
-    // send message (API)
     const sendBtn = document.getElementById('sendBtn');
     document.getElementById('sendBtn').addEventListener('click', sendNow);
     document.getElementById('message').addEventListener('keydown', function(ev){
@@ -324,9 +315,7 @@
       }
     }
 
-    // Autoscroll initial placeholder or welcome
-    document.getElementById('messages').innerHTML = '<div class="tiny muted" style="padding:12px">No messages yet — open another tab and send one to test.</div>';
-    // show server info
+   document.getElementById('messages').innerHTML = '<div class="tiny muted" style="padding:12px">No messages yet — open another tab and send one to test.</div>';
     document.getElementById('server-info').textContent = `${WS_HOST}:${WS_PORT}`;
   </script>
 </body>
